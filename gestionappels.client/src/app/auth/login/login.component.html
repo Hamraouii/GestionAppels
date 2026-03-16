@@ -1,0 +1,36 @@
+<div class="login-container">
+  <mat-card>
+    <div class="login-logo-container">
+      <img src="/mgpap-logo.png" alt="MGPAP Logo" class="login-logo">
+    </div>
+    <mat-card-header>
+      <mat-card-title>Connexion</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill">
+          <mat-label>Adresse e-mail</mat-label>
+          <input matInput formControlName="emailAddress" placeholder="Entrez votre adresse e-mail" required>
+          <mat-error *ngIf="loginForm.get('emailAddress')?.hasError('required')">
+            L'adresse e-mail est requise.
+          </mat-error>
+          <mat-error *ngIf="loginForm.get('emailAddress')?.hasError('email')">
+            Veuillez saisir une adresse e-mail valide.
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput formControlName="password" type="password" placeholder="Entrez votre mot de passe" required>
+           <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+            Le mot de passe est requis.
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">Se connecter</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

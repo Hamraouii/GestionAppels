@@ -1,0 +1,13 @@
+<h2>{{ isEdit ? 'Modifier le type de demande' : 'Créer un type de demande' }}</h2>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="fill">
+    <mat-label>Intitulé</mat-label>
+    <input matInput formControlName="intituleDemande" required>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Description</mat-label>
+    <input matInput formControlName="descriptionDemande">
+  </mat-form-field>
+  <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">{{ isEdit ? 'Enregistrer' : 'Créer' }}</button>
+  <button mat-button type="button" (click)="onCancel()">Annuler</button>
+</form>

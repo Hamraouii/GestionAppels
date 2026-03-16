@@ -1,0 +1,29 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+mat-sidenav {
+  width: 220px;
+  transition: width 0.2s;
+  overflow: hidden;
+}
+mat-sidenav.folded {
+  width: 60px !important;
+}
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 8px 0 0;
+}
+mat-nav-list a {
+  display: flex;
+  align-items: center;
+}
+mat-nav-list span {
+  margin-left: 16px;
+}
+mat-sidenav-content {
+  padding: 24px;
+}
+

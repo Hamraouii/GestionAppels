@@ -1,0 +1,117 @@
+# GitLab CI/CD pipeline for .NET and Angular application
+
+variables:
+  # IMAGE_TAG is composed of the project name and the current Git commit SHA
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  # Use the Docker-in-Docker driver
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+#===============================================================================
+# Build Stage
+#===============================================================================
+
+build_app:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  script:
+    - echo "Building the Docker image..."
+    # Login to the GitLab Container Registry
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # Build the Docker image
+    - docker build -t $IMAGE_TAG -f ./GestionAppels.Server/Dockerfile .
+    # Save the image as an artifact to be used in the next stage
+    - docker save $IMAGE_TAG > image.tar
+  artifacts:
+    paths:
+      - image.tar
+    expire_in: 1 hour
+
+#===============================================================================
+# Test Stage
+#===============================================================================
+
+# Job to run Angular tests
+angular_tests:
+  stage: test
+  image: node:20 # Use a Node.js image for Angular tests
+  before_script:
+    # Navigate to the client app directory
+    - cd gestionappels.client
+    # Install npm dependencies
+    - echo "Installing Angular dependencies..."
+    - npm install
+  script:
+    # Run Angular tests
+    - echo "Running Angular tests..."
+    - npm run test -- --watch=false --browsers=ChromeHeadless
+  needs: [] # Run in parallel with other jobs
+
+# Placeholder for .NET tests
+# dotnet_tests:
+#   stage: test
+#   image: mcr.microsoft.com/dotnet/sdk:9.0
+#   script:
+#     - echo "Running .NET tests..."
+#     - dotnet test # Assuming you have a test project
+#   needs: []
+
+#===============================================================================
+# Package Stage
+#===============================================================================
+
+package_app:
+  stage: package
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  dependencies:
+    - build_app # Depends on the build job
+  before_script:
+    # Load the Docker image from the artifact
+    - docker load < image.tar
+  script:
+    - echo "Pushing the Docker image to the GitLab Registry..."
+    # Login to the GitLab Container Registry
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # Push the image
+    - docker push $IMAGE_TAG
+
+#===============================================================================
+# Deploy Stage
+#===============================================================================
+
+deploy_app:
+  stage: deploy
+  image: alpine:latest # A small image for deployment scripts
+  script:
+    - echo "Deploying the application..."
+    # Add your deployment script here. 
+    # This is a placeholder and needs to be adapted to your environment.
+    # Example for a simple SSH deployment:
+    # - apk add --no-cache openssh-client
+    # - eval $(ssh-agent -s)
+    # - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    # - mkdir -p ~/.ssh
+    # - chmod 700 ~/.ssh
+    # - ssh-keyscan $DEPLOY_SERVER_IP >> ~/.ssh/known_hosts
+    # - chmod 644 ~/.ssh/known_hosts
+    # - ssh $DEPLOY_USER@$DEPLOY_SERVER_IP "\
+    #     docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY && \
+    #     docker pull $IMAGE_TAG && \
+    #     docker stop my-app-container || true && \
+    #     docker rm my-app-container || true && \
+    #     docker run -d --name my-app-container -p 80:8080 $IMAGE_TAG"
+  environment:
+    name: production
+  when: manual # This job will only run when manually triggered
+  only:
+    - main # Or your default branch

@@ -1,0 +1,214 @@
+@use "sass:color";
+
+// Variables (copied from layout.component.scss)
+$primary-color: #004a99;
+$secondary-color: #0078d7;
+$accent-color: #ff6b00;
+$text-color: #333;
+$light-text: #fff;
+$border-color: #e0e0e0;
+$background-color: #f5f7fa;
+$shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+// Global and AppComponent specific styles
+html, body, .sidenav-container {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.sidenav-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000; // Ensure it stays on top during scroll
+  // Styles for mat-toolbar are handled by Angular Material theming primarily
+  // We can add custom styles if needed, e.g., for the container within mat-toolbar
+  .mat-toolbar {
+    padding: 0 1rem; // Adjust padding as needed
+  }
+
+  .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; // Reduced gap for toolbar
+
+    .mgpap-logo {
+      height: 40px; // Adjusted in HTML, can be reinforced here
+      width: auto;
+      object-fit: contain;
+    }
+
+    .app-title {
+      display: flex;
+      flex-direction: column;
+      span {
+        font-size: 1.2rem; // Adjusted for toolbar
+        font-weight: 500;
+        white-space: nowrap;
+        color: $light-text; // Ensure title text is light
+      }
+      .app-subtitle {
+        font-size: 0.7rem;
+        margin: 0;
+        opacity: 0.85;
+      }
+    }
+  }
+
+  .toolbar-spacer {
+    flex: 1 1 auto;
+  }
+
+  .main-nav {
+    display: flex;
+    gap: 0.5rem; // Adjusted gap for toolbar
+    align-items: center;
+
+    a.mat-button {
+      color: $light-text;
+      text-decoration: none;
+      transition: background-color 0.2s;
+      font-weight: 500;
+
+      mat-icon {
+        margin-right: 0.3rem;
+        color: $light-text; // Ensure icons are light
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.active-link {
+        background-color: rgba(255, 255, 255, 0.15);
+        font-weight: 600;
+        // Active link indicator can be more subtle with Material buttons
+      }
+    }
+  }
+
+  .user-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; // Adjusted gap for toolbar
+
+    button.mat-button {
+      color: $light-text;
+      mat-icon {
+        margin-right: 0.3rem;
+        color: $light-text; // Ensure icons are light
+      }
+    }
+
+    .logout-btn {
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+mat-sidenav {
+  width: 250px; // Default width
+  background-color: #fff; // Example background
+  box-shadow: $shadow;
+  border-right: 1px solid $border-color;
+
+  &.folded {
+    width: 60px; // Width when folded
+  }
+
+  .sidebar-header {
+    padding: 8px;
+    display: flex;
+    justify-content: flex-end;
+    border-bottom: 1px solid $border-color;
+    margin-bottom: 8px;
+  }
+
+  .mat-nav-list {
+    padding-top: 0;
+    a.mat-list-item {
+      color: $text-color;
+      .mat-icon {
+        color: $secondary-color;
+      }
+      &.active-link {
+        background-color: color.adjust($primary-color, $alpha: -0.9);
+        color: $primary-color;
+        font-weight: 600;
+        .mat-icon {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  background-color: $background-color;
+  flex: 1;
+
+  .main-content-area {
+    flex: 1;
+    padding: 1.5rem; // Default padding from HTML
+    max-width: 1600px; // Max content width
+    width: 100%;
+    margin: 0 auto;
+    // background-color: $light-text; // Content background can be white or light gray
+    // border-radius: 8px;
+    // box-shadow: $shadow;
+  }
+
+  .app-footer {
+    text-align: center;
+    padding: 1rem; // Default padding from HTML
+    color: #666;
+    font-size: 0.875rem;
+    border-top: 1px solid $border-color;
+    background-color: #f9f9f9; // Light background for footer
+  }
+}
+
+// Responsive styles (adapted from layout.component.scss)
+@media (max-width: 768px) {
+  .main-header {
+    .mat-toolbar {
+      flex-direction: column;
+      height: auto; // Allow toolbar to grow
+      padding: 0.5rem;
+    }
+    .logo-section, .main-nav, .user-actions {
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+    }
+    .main-nav {
+      flex-direction: column;
+      gap: 0.2rem;
+      a.mat-button {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+    .user-actions {
+      margin-top: 0.5rem;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  mat-sidenav-content {
+    .main-content-area {
+      padding: 1rem;
+    }
+  }
+}

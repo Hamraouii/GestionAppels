@@ -1,0 +1,9 @@
+form {
+  max-width: 400px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+}
+mat-form-field {
+  margin-bottom: 1rem;
+}

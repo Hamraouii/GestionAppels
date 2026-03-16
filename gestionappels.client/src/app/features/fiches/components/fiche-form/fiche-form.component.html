@@ -1,0 +1,120 @@
+<div class="form-container">
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <h2>{{ isViewMode ? 'Détails de la Fiche' : (isEditMode ? 'Modifier la Fiche' : 'Créer une Nouvelle Fiche') }}</h2>
+
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <form [formGroup]="ficheForm" (ngSubmit)="onSubmit()" [style.visibility]="isLoading ? 'hidden' : 'visible'">
+    <!-- Adherent Autocomplete -->
+    <div class="form-field autocomplete-container">
+      <label for="adherent-search">Adhérent</label>
+      <input
+        id="adherent-search"
+        type="text"
+        placeholder="Rechercher par affiliation, matricule, nom..."
+        [formControlName]="'adherentSearch'"
+        (focus)="console.log('Input focused')"
+        (input)="handleInput($event)"
+        (blur)="showAdherentResults = false"
+      >
+      <!-- Hidden input to hold the actual affiliation value for the form -->
+      <input type="hidden" formControlName="affiliation">
+      <small *ngIf="isInvalid('affiliation')" class="error-text">L'adhérent est requis.</small>
+
+      <div *ngIf="showAdherentResults && (adherentSearchResults$ | async) as results" class="autocomplete-results">
+        <div *ngIf="results.length > 0; else noResults" class="results-list">
+          <div *ngFor="let adherent of results" class="result-item" (mousedown)="selectAdherent(adherent)">
+            <strong>{{ adherent.nom }} {{ adherent.prenom }}</strong><br>
+            <small>Aff: {{ adherent.affiliation }} | Mat: {{ adherent.immatriculation }}</small>
+          </div>
+        </div>
+        <ng-template #noResults>
+          <div class="no-results">Aucun adhérent trouvé.</div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Telephones -->
+    <div class="form-field">
+      <label for="telephone1">Téléphone 1</label>
+      <input id="telephone1" formControlName="telephone1">
+      <small *ngIf="isInvalid('telephone1')" class="error-text">Le téléphone 1 est requis.</small>
+    </div>
+    <div class="form-field">
+      <label for="telephone2">Téléphone 2 (Optionnel)</label>
+      <input id="telephone2" formControlName="telephone2">
+    </div>
+    <div class="form-field">
+      <label for="telephone3">Téléphone 3 (Optionnel)</label>
+      <input id="telephone3" formControlName="telephone3">
+    </div>
+
+    <!-- Type de Demande Dropdown -->
+    <div class="form-field">
+      <label for="typeDemandeId">Type de Demande</label>
+      <select id="typeDemandeId" class="form-control" formControlName="typeDemandeId">
+        <option [ngValue]="null" disabled>Sélectionnez un type</option>
+        <option *ngFor="let type of typeDemandes$ | async" [value]="type.id">
+          {{ type.intituleDemande }}
+        </option>
+      </select>
+      <small *ngIf="isInvalid('typeDemandeId')" class="error-text">
+        Le type de demande est requis.
+      </small>
+    </div>
+
+    <!-- Sous-Type de Demande Dropdown -->
+    <div class="form-field">
+      <label for="sousTypeDemandeId">Sous-Type de Demande</label>
+      <select id="sousTypeDemandeId" class="form-control" formControlName="sousTypeDemandeId"
+              [disabled]="!(ficheForm.get('typeDemandeId')?.value)">
+        <option [ngValue]="null" disabled>Sélectionnez un sous-type</option>
+        <option *ngFor="let sousType of sousTypeDemandes$ | async" [value]="sousType.id">
+          {{ sousType.intitule }}
+        </option>
+      </select>
+      <small *ngIf="isInvalid('sousTypeDemandeId')" class="error-text">
+        Le sous-type de demande est requis.
+      </small>
+      <small *ngIf="!(ficheForm.get('typeDemandeId')?.value) && !(sousTypeDemandes$ | async)?.length" class="form-text text-muted">
+        Veuillez d'abord sélectionner un type de demande.
+      </small>
+      <small *ngIf="(ficheForm.get('typeDemandeId')?.value) && !(sousTypeDemandes$ | async)?.length && (typeDemandes$ | async)?.length" class="form-text text-muted">
+        Aucun sous-type disponible pour le type sélectionné.
+      </small>
+    </div>
+
+    <!-- Details -->
+    <div class="form-field">
+      <label for="details">Détails de la demande</label>
+      <quill-editor id="details" formControlName="details" [readOnly]="isViewMode"></quill-editor>
+      <small *ngIf="isInvalid('details')" class="error-text">Les détails sont requis.</small>
+    </div>
+
+    <!-- Statut -->
+    <div class="form-field">
+      <label for="statut">Statut</label>
+      <select id="statut" formControlName="statut">
+        <option *ngFor="let option of statutDemandeOptions" [value]="option.value">{{ option.key }}</option>
+      </select>
+      <small *ngIf="isInvalid('statut')" class="error-text">Le statut est requis.</small>
+    </div>
+
+    <div class="form-actions">
+      <!-- Buttons for Create/Edit Mode -->
+      <ng-container *ngIf="!isViewMode">
+        <button type="submit" [disabled]="isLoading || ficheForm.invalid">{{ isLoading ? 'Sauvegarde...' : 'Sauvegarder' }}</button>
+        <button type="button" (click)="cancel()" [disabled]="isLoading">Annuler</button>
+      </ng-container>
+
+      <!-- Buttons for View Mode -->
+      <ng-container *ngIf="isViewMode">
+        <button type="button" (click)="editCurrentFiche()">Modifier</button>
+        <button type="button" (click)="cancel()">Retour</button>
+      </ng-container>
+    </div>
+  </form>
+</div>

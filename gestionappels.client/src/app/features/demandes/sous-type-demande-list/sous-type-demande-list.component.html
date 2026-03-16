@@ -1,0 +1,22 @@
+<h2>Sous-types de demande</h2>
+<button mat-raised-button color="primary" (click)="onCreate()">Créer un sous-type</button>
+<table mat-table [dataSource]="sousTypes" class="mat-elevation-z8" *ngIf="!isLoading">
+  <ng-container matColumnDef="intitule">
+    <th mat-header-cell *matHeaderCellDef>Intitulé</th>
+    <td mat-cell *matCellDef="let sousType">{{sousType.intitule}}</td>
+  </ng-container>
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef>Description</th>
+    <td mat-cell *matCellDef="let sousType">{{sousType.description}}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Actions</th>
+    <td mat-cell *matCellDef="let sousType">
+      <button mat-button (click)="onEdit(sousType)">Modifier</button>
+      <button mat-button color="warn" (click)="onDelete(sousType)">Supprimer</button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="['intitule', 'description', 'actions']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['intitule', 'description', 'actions'];"></tr>
+</table>
+<div *ngIf="isLoading">Chargement...</div>

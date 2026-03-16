@@ -1,0 +1,48 @@
+<!-- src/app/features/fiches/components/fiche-list/fiche-list.component.html -->
+<div class="fiche-list-container">
+  <div class="header">
+    <h2>Liste des Fiches</h2>
+    <button class="create-btn" (click)="createNewFiche()">+ Créer une Nouvelle Fiche</button>
+  </div>
+  <!-- Add search/filter controls here later -->
+
+  <div *ngIf="error" class="error-message">
+    Une erreur est survenue lors du chargement des fiches. Veuillez réessayer.
+    <pre>{{ error | json }}</pre>
+  </div>
+
+  <div *ngIf="fiches$ | async as fiches; else loadingOrError">
+    <p *ngIf="fiches.length === 0 && !error">Aucune fiche trouvée.</p>
+
+    <table *ngIf="fiches.length > 0">
+      <thead>
+        <tr>
+          <th>Affiliation</th>
+          <th>Téléphone 1</th>
+          <th>Agent</th>
+          <th>Statut</th>
+          <th>Créée le</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let fiche of fiches">
+          <td>{{ fiche.affiliation }}</td>
+          <td>{{ fiche.telephone1 }}</td>
+          <td>{{ fiche.userNom }}</td>
+          <td>{{ getStatutName(fiche.statut) }}</td>
+          <td>{{ fiche.createdAt | date:'dd/MMM/yyyy HH:mm' }}</td>
+          <td>
+            <button class="action-btn view-btn" (click)="viewFiche(fiche.id)">Voir</button>
+            <button class="action-btn edit-btn" (click)="editFiche(fiche.id)">Modifier</button>
+            <button class="action-btn delete-btn" (click)="deleteFiche(fiche.id)">Supprimer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #loadingOrError>
+    <p *ngIf="!error">Chargement des fiches...</p>
+  </ng-template>
+</div>

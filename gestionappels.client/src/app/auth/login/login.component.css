@@ -1,0 +1,47 @@
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+mat-card-title {
+  text-align: center;
+  width: 100%; /* Ensure it can be centered */
+  padding-bottom: 0.5rem; /* Add some space below the title */
+}
+
+mat-card {
+  width: 100%;
+  max-width: 400px;
+  padding-top: 1rem; /* Add space above the logo */
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.login-logo-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem; /* Space above the logo */
+  margin-bottom: 0.5rem; /* Reduced space between logo and title */
+}
+
+.login-logo {
+  max-width: 120px; /* Smaller logo */
+  max-height: 80px;  /* Smaller logo */
+  height: auto;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: center; /* Center the title within the header */
+  padding-bottom: 0; /* Adjust if default padding is too much after title padding */
+}
